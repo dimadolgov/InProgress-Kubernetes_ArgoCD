@@ -1,0 +1,33 @@
+##################################################################
+# Manifet File to create AWS EKS Cluster in Custom VPC
+#
+# eksctl create cluster -f eks_cluster_prod.yaml
+# eksctl delete cluster -f eks_cluster_prod.yaml
+#
+##################################################################
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: k8s-prod # Cluster Name
+  region: il-central-1 # Cluster Region
+  version: "1.28" # Cluster Version
+
+vpc:
+  id: "vpc-0e0b7e966d120006b" # VPC id
+  subnets:
+    public:
+      il-centrala: { id: subnet-0dfb68b14c281e74c } # For Load Balancer
+      il-centralb: { id: subnet-08032beb4b8972b80 } # For Load Balancer
+    private:
+      il-centrala: { id: subnet-057f17a3c55b08527 } # For Worker Nodes
+      il-centralb: { id: subnet-04fe918b1fe9916d0 } # For Worker Nodes
+
+managedNodeGroups:
+  - name: general # Node Group Name
+    instanceType: t3.small
+    desiredCapacity: 3
+    labels: { role: general }
+    volumeSize: 70
+    privateNetworking: true
